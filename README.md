@@ -1,2 +1,3 @@
-# hello-world
-my startup repository
+Hi Girl,
+
+this is my first file for studying. 
