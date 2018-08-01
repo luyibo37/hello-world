@@ -5,20 +5,15 @@ class Student():
 		self.name = name
 		self.course_score={}
 		self.rank = rank
-		self._sum_of_courses = 0
+		#self.sum_of_courses = 0
 		#self.avg_of_courses = 0
 
-	@property
 	def sum_of_courses(self):
-		return self._sum_of_courses
-
-	@sum_of_courses.setter
-	def sum_of_courses(self,course_name):
-		self.sum_of_courses += self.course_score[course_name]
+		return sum(float(self.course_score[course]) for course in self.course_score)
 
 	def avg_of_courses(self):
 		num = len(self.course_score)
-		return self.sum_of_courses/num
+		return self.sum_of_courses()/num
 
 def read_report(filepath):
 	with open(filepath,encoding='utf-8') as fin:
@@ -26,14 +21,14 @@ def read_report(filepath):
 	return file_data
 
 def write_file(filepath,input_data):
-	with open(filepath, 'a') as fin:
+	with open(filepath,'w') as fin:
 		fin.write(input_data)
-
 
 if __name__ == '__main__':
 	#read from file
 	all_data = read_report(r'report.txt')
 	out_file = 'result.txt'
+	add_to_file = ''
 	headers = all_data[0].strip().lstrip('\ufeff').split(' ')
 	students = []
 	for line in all_data[1:]:
@@ -50,7 +45,7 @@ if __name__ == '__main__':
 	#sort student by sum of scores
 	for j in range(0,student_num-1):
 		for s in range(0,student_num-1):
-			if students[s].sum_of_courses < students[s+1].sum_of_courses:
+			if students[s].sum_of_courses() < students[s+1].sum_of_courses():
 				temp = students[s+1]
 				students[s+1] = students[s]
 				students[s] = temp
@@ -79,8 +74,7 @@ if __name__ == '__main__':
 	#print headers
 	print (' '.join(headers))
 	add_str = ' '.join(headers)
-	write_file(out_file,add_str)
-	write_file(out_file, '\n')
+	add_to_file = add_str + '\n'
 
 	#print avg
 	cur_str = ''
@@ -91,8 +85,8 @@ if __name__ == '__main__':
 			this_data = str(avgs[header])
 		cur_str = cur_str + ' ' + this_data
 	print (cur_str)
-	write_file(out_file,cur_str)
-	write_file(out_file, '\n')
+	add_to_file = add_to_file + cur_str + '\n'
+
 	#print students
 	for student in students[1:]:
 		cur_str = ''
@@ -104,12 +98,13 @@ if __name__ == '__main__':
 			elif header == '平均分':
 				this_data = str(format(student.avg_of_courses(),'.1f'))
 			elif header == '总分':
-				this_data = str(format(student.sum_of_courses,'.1f'))
+				this_data = str(format(student.sum_of_courses(),'.1f'))
 			elif float(student.course_score[header]) < 60:
 				this_data = '不及格'
 			else:
 				this_data = str(format(float(student.course_score[header]),'.1f'))
 			cur_str = cur_str + ' ' + this_data
 		print (cur_str)
-		write_file(out_file, cur_str)
-		write_file(out_file,'\n')
+		add_to_file = add_to_file + cur_str +'\n'
+		write_file(out_file, add_to_file)
+
